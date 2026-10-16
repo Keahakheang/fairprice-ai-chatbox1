@@ -1,4 +1,4 @@
-<!-- public/index.html -->
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -16,18 +16,13 @@
         --user: #2563eb;
         --assistant: #e5e7eb;
       }
-
-      * {
-        box-sizing: border-box;
-      }
-
+      * { box-sizing: border-box; }
       body {
         margin: 0;
         font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
         background: var(--bg);
         color: var(--text);
       }
-
       .app {
         max-width: 900px;
         margin: 0 auto;
@@ -36,21 +31,9 @@
         flex-direction: column;
         padding: 24px;
       }
-
-      .header {
-        margin-bottom: 16px;
-      }
-
-      .header h1 {
-        margin: 0 0 6px;
-        font-size: 24px;
-      }
-
-      .header p {
-        margin: 0;
-        color: var(--muted);
-      }
-
+      .header { margin-bottom: 16px; }
+      .header h1 { margin: 0 0 6px; font-size: 24px; }
+      .header p { margin: 0; color: var(--muted); }
       .chat {
         flex: 1;
         background: var(--panel);
@@ -63,7 +46,6 @@
         flex-direction: column;
         gap: 12px;
       }
-
       .message {
         max-width: 80%;
         padding: 12px 14px;
@@ -72,27 +54,23 @@
         white-space: pre-wrap;
         word-wrap: break-word;
       }
-
       .message.user {
         align-self: flex-end;
         background: var(--user);
         color: white;
         border-bottom-right-radius: 4px;
       }
-
       .message.assistant {
         align-self: flex-start;
         background: var(--assistant);
         color: var(--text);
         border-bottom-left-radius: 4px;
       }
-
       .composer {
         display: flex;
         gap: 12px;
         margin-top: 16px;
       }
-
       .composer input {
         flex: 1;
         padding: 14px 16px;
@@ -101,12 +79,10 @@
         font-size: 16px;
         outline: none;
       }
-
       .composer input:focus {
         border-color: #93c5fd;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
       }
-
       .composer button {
         padding: 14px 18px;
         border: none;
@@ -116,12 +92,10 @@
         font-size: 16px;
         cursor: pointer;
       }
-
       .composer button:disabled {
         opacity: 0.6;
         cursor: not-allowed;
       }
-
       .status {
         margin-top: 10px;
         color: var(--muted);
@@ -162,8 +136,7 @@
       const messages = [
         {
           role: 'assistant',
-          content:
-            'Hi! Ask me about a FairPrice product price, and I’ll help as best as I can.',
+          content: 'Hi! Ask me about a FairPrice product price, and I’ll help as best as I can.',
         },
       ];
 
@@ -230,4 +203,3 @@
     </script>
   </body>
 </html>
-
