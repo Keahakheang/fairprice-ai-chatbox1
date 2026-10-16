@@ -1,1 +1,233 @@
+<!-- public/index.html -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FairPrice AI Chatbox</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7fb;
+        --panel: #ffffff;
+        --border: #d9deea;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --user: #2563eb;
+        --assistant: #e5e7eb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .app {
+        max-width: 900px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+      }
+
+      .header {
+        margin-bottom: 16px;
+      }
+
+      .header h1 {
+        margin: 0 0 6px;
+        font-size: 24px;
+      }
+
+      .header p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .chat {
+        flex: 1;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        overflow-y: auto;
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .message {
+        max-width: 80%;
+        padding: 12px 14px;
+        border-radius: 14px;
+        line-height: 1.45;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .message.user {
+        align-self: flex-end;
+        background: var(--user);
+        color: white;
+        border-bottom-right-radius: 4px;
+      }
+
+      .message.assistant {
+        align-self: flex-start;
+        background: var(--assistant);
+        color: var(--text);
+        border-bottom-left-radius: 4px;
+      }
+
+      .composer {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .composer input {
+        flex: 1;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        font-size: 16px;
+        outline: none;
+      }
+
+      .composer input:focus {
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+      }
+
+      .composer button {
+        padding: 14px 18px;
+        border: none;
+        border-radius: 12px;
+        background: #111827;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .composer button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .status {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 14px;
+        min-height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="header">
+        <h1>FairPrice AI Chatbox</h1>
+        <p>Ask about product prices, promotions, and comparisons.</p>
+      </div>
+
+      <div id="chat" class="chat"></div>
+
+      <form id="composer" class="composer">
+        <input
+          id="input"
+          type="text"
+          placeholder="Ask about a FairPrice product price..."
+          autocomplete="off"
+        />
+        <button id="send" type="submit">Send</button>
+      </form>
+
+      <div id="status" class="status"></div>
+    </div>
+
+    <script>
+      const chat = document.getElementById('chat');
+      const composer = document.getElementById('composer');
+      const input = document.getElementById('input');
+      const send = document.getElementById('send');
+      const statusEl = document.getElementById('status');
+
+      const messages = [
+        {
+          role: 'assistant',
+          content:
+            'Hi! Ask me about a FairPrice product price, and I’ll help as best as I can.',
+        },
+      ];
+
+      function renderMessage(role, content) {
+        const div = document.createElement('div');
+        div.className = `message ${role}`;
+        div.textContent = content;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+      }
+
+      function renderAllMessages() {
+        chat.innerHTML = '';
+        for (const message of messages) {
+          renderMessage(message.role, message.content);
+        }
+      }
+
+      async function sendMessage(text) {
+        messages.push({ role: 'user', content: text });
+        renderMessage('user', text);
+
+        send.disabled = true;
+        statusEl.textContent = 'Thinking...';
+
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ messages }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Request failed');
+          }
+
+          const reply = data.reply || 'No response.';
+          messages.push({ role: 'assistant', content: reply });
+          renderMessage('assistant', reply);
+        } catch (error) {
+          const fallback = `Sorry, something went wrong: ${error.message}`;
+          messages.push({ role: 'assistant', content: fallback });
+          renderMessage('assistant', fallback);
+        } finally {
+          send.disabled = false;
+          statusEl.textContent = '';
+          input.focus();
+        }
+      }
+
+      composer.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        sendMessage(text);
+      });
+
+      renderAllMessages();
+    </script>
+  </body>
+</html>
 
